@@ -1,0 +1,24 @@
+1. CREATE USER myuser WITH PASSWORD 'mypassword';
+
+    Explanation:
+
+    - CREATE USER — creates a new role that can log in.
+    - WITH PASSWORD — assigns a password so your FastAPI app can authenticate.
+
+2. ALTER ROLE myuser SET client_encoding TO 'utf8';
+   ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
+   ALTER ROLE myuser SET timezone TO 'UTC';
+
+   Explanation:
+
+    - client_encoding TO 'utf8': ensures data encoding supports all characters.
+    - default_transaction_isolation TO 'read committed': ensures safe transaction behavior.
+    - timezone TO 'UTC': keeps timestamps consistent globally (important for fraud logs).
+
+3. GRANT ALL PRIVILEGES ON DATABASE fraud_detection_db TO myuser;
+
+    - This allows myuser to read, write, and modify data in your fraud_detection_db.
+
+4. \du - list all roles
+
+5. To login into my user using cmd - psql -d fraud_detection_db -U bharath -W
