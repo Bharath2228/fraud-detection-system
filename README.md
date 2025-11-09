@@ -2,7 +2,9 @@ Everything done till now:
 1. Installed Postgresql - psql, pgadmin
 2. Installed Fast API and uvicorn
 3. Git Setup done
-4. PostgreSQL setup done 
+4. PostgreSQL setup done
+5. PyJWT 
+6. Passlib
 
 
 ### **Week One - Completed**
