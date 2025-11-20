@@ -1,5 +1,6 @@
 import jwt
-from passlib.context import CryptContext
+# from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 import models
@@ -13,24 +14,51 @@ accessTokenExpireMinutes = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-passwordContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# passwordContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Hashing the password with bcrypt
+# def hashPassword(password: str) -> str:
+#     try:
+#         print(f"Original Password: {password}")
+#         # bcrypt internally handles truncating passwords longer than 72 characters
+#         return passwordContext.hash(password)
+#     except Exception as e:
+#         # Handle any other errors (like issues with the bcrypt library)
+#         print(f"Error while hashing password: {str(e)}")
+#         raise e
+
 def hashPassword(password: str) -> str:
     try:
         print(f"Original Password: {password}")
-        password = password[:72]
-        return passwordContext.hash(password)
+        # bcrypt internally truncates passwords longer than 72 characters, so we don’t need to truncate manually
+        password_bytes = password.encode('utf-8')
 
-    except ValueError as e:
-        # Check if the error is due to password length
-        if "password cannot be longer than 72 bytes" in str(e):
-            raise ValueError("Password exceeds maximum length of 72 characters.")
+        # Generate a salt and hash the password
+        hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+        return hashed_password.decode('utf-8')  # Convert the hashed password back to string
+
+    except Exception as e:
+        # Handle any errors related to bcrypt
+        print(f"Error while hashing password: {str(e)}")
         raise e
 
 # Comparing the plain password with the stored hash
+# def verifyPassword(plainPassword: str, hashedPassword: str) -> bool:
+#     return passwordContext.verify(plainPassword, hashedPassword)
+
 def verifyPassword(plainPassword: str, hashedPassword: str) -> bool:
-    return passwordContext.verify(plainPassword, hashedPassword)
+    try:
+        # bcrypt expects both the plain password and the hashed password to be in bytes
+        plainPassword_bytes = plainPassword.encode('utf-8')
+        hashedPassword_bytes = hashedPassword.encode('utf-8')
+
+        # Check if the plain password matches the hashed password
+        return bcrypt.checkpw(plainPassword_bytes, hashedPassword_bytes)
+
+    except Exception as e:
+        # Handle any errors related to bcrypt
+        print(f"Error while verifying password: {str(e)}")
+        raise e
 
 # Creating jwt access token using a dictionary of user data [ Including the expiration time ]
 def createAccessToken(data: dict, expiresDelta: timedelta = timedelta(minutes=accessTokenExpireMinutes)):

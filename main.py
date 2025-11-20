@@ -33,6 +33,9 @@ def register_user(user: UserCreate, db: Session = Depends(getDb)):
     if dbUser:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    if len(user.password) > 72:
+        raise HTTPException(status_code=400, detail="Password exceeds maximum length of 72 characters")
+
     # Hashing the password before saving it
     hashedPassword = hashPassword(user.password)
 

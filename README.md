@@ -6,6 +6,7 @@ Everything done till now:
 5. PyJWT 
 6. Passlib
 
+uvicorn main:app --reload
 
 ### **Week One - Completed**
 * Set up the FastAPI backend with basic API routes for transaction creation and retrieval.
